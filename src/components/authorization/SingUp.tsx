@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,7 +10,24 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+interface IFormInput {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+}
+
+const signUpSchema = yup.object().shape({
+  email: yup.string().required().email(),
+  firstName: yup.string().required().min(2).max(25),
+  lastName: yup.string().required().min(2).max(25),
+  password: yup.string().required().min(8).max(120),
+});
 
 function Copyright(props: any) {
   return (
@@ -26,21 +42,23 @@ function Copyright(props: any) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormInput>({ resolver: yupResolver(signUpSchema)});
+
+  const [json, setJson] = useState<string>();
+
+  const onSubmit = (data: IFormInput) => {
+    console.log(JSON.stringify(data));
+    const de = setJson(JSON.stringify(data));
+    console.log(de)
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -57,48 +75,58 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                />
+              <TextField
+                {...register("firstName")}
+                    variant="outlined"
+                    margin="normal"
+                label="First Name"
+                helperText={errors.firstName?.message}
+                error={!!errors.firstName?.message}
+                    fullWidth
+                    required
+                  />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
+              <TextField
+                {...register("lastName")}
                   required
-                  fullWidth
+                fullWidth
+                margin="normal"
                   id="lastName"
                   label="Last Name"
+                  helperText={errors.lastName?.message}
+                  error={!!errors.lastName?.message}
                   name="lastName"
                   autoComplete="family-name"
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+              <TextField
+                {...register("email")}
                   required
                   fullWidth
                   id="email"
                   label="Email Address"
                   name="email"
+                  helperText={errors.email?.message}
+                  error={!!errors.email?.message}
                   autoComplete="email"
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
+              <TextField
+                {...register("password")}
+                  variant="outlined"
+                  margin="normal"
                   label="Password"
                   type="password"
-                  id="password"
-                  autoComplete="new-password"
+                  helperText={errors.password?.message}
+                  error={!!errors.password?.message}
+                  fullWidth
+                  required
                 />
               </Grid>
               <Grid item xs={12}>
@@ -127,6 +155,5 @@ export default function SignUp() {
         </Box>
         <Copyright sx={{ mt: 5 }} />
       </Container>
-    </ThemeProvider>
   );
 }

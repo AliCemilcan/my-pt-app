@@ -2,8 +2,8 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import SignIn from './authorization/SignIn'
-import SignUp from './authorization/SingUp'
+import SignIn from './components/authorization/SignIn'
+import SignUp from './components/authorization/SingUp'
 
 import './App.css'
 
@@ -14,8 +14,8 @@ function App() {
     <>
       <BrowserRouter>
          <Routes>
-            <Route path="/singin" element={<SignIn />} />
-            <Route path="/singup" element={<SignUp />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
           </Routes>
       <div>
         <a href="https://vitejs.dev" target="_blank">
